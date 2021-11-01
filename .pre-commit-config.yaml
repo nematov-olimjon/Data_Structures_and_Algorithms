@@ -1,0 +1,23 @@
+exclude: '(\.eggs|\.git|\.hg|\.mypy_cache|\.pytest_cache|\.tox|\.venv|venv|.env|env|\.vscode|static|media/|deployments|requirements|.*/templates|.*/migrations)'
+repos:
+  - repo: https://github.com/pycqa/isort
+    rev: 5.8.0
+    hooks:
+      - id: isort
+  - repo: https://github.com/ambv/black
+    rev: 21.5b2
+    hooks:
+      - id: black
+        language_version: python3.8
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.9.2
+    hooks:
+      - id: flake8
+  - repo: local
+    hooks:
+      - id: migrations-check
+        language: system
+        name: Check for uncreated migrations.
+        entry: sh -c "./src/manage.py makemigrations --check --dry-run"
+        files: "models\\.py$"
+        stages: [ commit ]
