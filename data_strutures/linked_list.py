@@ -92,3 +92,22 @@ class LinkedList:
             count += 1
         node.next = current_node.next
         current_node.next = node
+
+    def remove(self, data):
+        """
+        Remove node with given data. Raises Exception if
+        Linked List is empty or node with given data not found
+        """
+        if self.head is None:
+            raise Exception("Linked List is empty!")
+        if self.head.data == data:
+            self.head = self.head.next
+            return
+
+        prev_node = self.head
+        for current_node in self:
+            if current_node.data == data:
+                prev_node.next = current_node.next
+                return
+            prev_node = current_node
+        raise Exception(f"Node with {data} not found!")
