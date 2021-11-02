@@ -11,17 +11,16 @@ class Node:
         return str(self.data)
 
 
-class LinkedList:
+class CircularLinkedList:
     """
-    Single Linked List data structure
+    Single Circular Linked List data structure
     """
 
     def __init__(self, nodes=None):
         """
-        Creating Linked List with given elements in nodes.
+        Creating Circular Linked List with given elements in nodes.
         Nodes parameter can be any iterable object.
         Time complexity: O(n)
-        Space complexity: O(1)
         """
         self.head = None
         if nodes is not None:
@@ -30,25 +29,29 @@ class LinkedList:
             for elem in nodes:
                 node.next = Node(elem)
                 node = node.next
+            node.next = self.head
 
     def __repr__(self):
         """
         Time complexity: O(n)
         Space complexity: O(1)
         """
-        node = self.head
-        nodes = ""
-        while node is not None:
-            nodes += f"{str(node.data)} -> "
-            node = node.next
-        return f"{self.__class__.__name__}: {nodes}None"
+        if self.head is not None:
+            nodes = ""
+            for current_node in self:
+                nodes += f"{str(current_node.data)} -> "
+            return f"{self.__class__.__name__}: {nodes}head({self.head.data})"
+        return "None"
 
     def __iter__(self):
         """
-        Each iteration will take constant time ans space complexity
+        Each iteration will take constant time and space complexity
         """
-        node = self.head
-        while node is not None:
+        if self.head is None:
+            return 0
+        yield self.head
+        node = self.head.next
+        while node is not self.head:
             yield node
             node = node.next
 
@@ -64,27 +67,34 @@ class LinkedList:
 
     def add_first(self, data):
         """
-        Insertion node with data parameter at the beginning of Linked List.
+        Insertion node with data parameter at the beginning of
+        Circular Linked List.
         Time complexity: O(1)
         Space complexity: O(1)
         """
-        node = Node(data)
-        node.next = self.head
-        self.head = node
+        if self.head is not None:
+            self.add_between(1, data)
+            temp = self.head.data
+            self.head.data = data
+            self.head.next.data = temp
+        else:
+            self.head = Node(data)
+            self.head.next = self.head
 
     def add_last(self, data):
         """
-        Insertion node with data parameter at the end of Linked List.
+        Insertion node with data parameter at the end of Circular Linked List.
         Time complexity: O(n)
         Space complexity: O(1)
         """
         node = Node(data)
         if self.head is None:
-            self.head = node
+            self.add_first(data)
         else:
             for current_node in self:
                 pass
             current_node.next = node
+            node.next = self.head
 
     def add_between(self, position, data):
         """
@@ -111,19 +121,32 @@ class LinkedList:
         node.next = current_node.next
         current_node.next = node
 
+    def remove_first(self):
+        """
+        Remove first node.
+        Time complexity: O(1)
+        Space complexity: O(1)
+        """
+        if self.head is None:
+            raise Exception("Circular Linked List is empty!")
+        self.head.data = self.head.next.data
+        self.head.next = self.head.next.next
+
     def remove(self, data):
         """
         Remove node with given data. Raises Exception if
-        Linked List is empty or node with given data not found
+        Circular Linked List is empty or node with given data not found
         Time complexity: O(n)
         Space complexity: O(1)
         """
         if self.head is None:
-            raise Exception("Linked List is empty!")
+            raise Exception("Circular Linked List is empty!")
         if self.head.data == data:
-            self.head = self.head.next
+            if self.head.next == self.head:
+                self.head = None
+            else:
+                self.remove_first()
             return
-
         prev_node = self.head
         for current_node in self:
             if current_node.data == data:
